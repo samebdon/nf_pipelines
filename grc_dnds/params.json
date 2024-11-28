@@ -1,0 +1,6 @@
+{
+	"braker_tsv" : "${launchDir}/data/inputs/sciaridae_braker.tsv",
+        "protein_tsv" : "${launchDir}/data/inputs/sciaridae_prot.tsv",
+	"outdir" : "${launchDir}/data/results/grc_dnds"
+}
+
