@@ -5,11 +5,6 @@
 // add simple fasta headers to script?
 // make tsv input to annotate row by row
 
-params.meta = "orchesellaFlavescens"
-params.genome = "$launchDir/data/results/genomes/orchesella_flavescens/GCA_964034955.1.simple_header.fasta"
-params.prot_seq = "$launchDir/data/results/braker2/dbs/Arthropoda.allacmaFusca.fa"
-params.outdir = "$launchDir/data/results/annotations/${params.meta}_nf"
-
 log.info """\
          O R T H O L O G  P O P  G E N   N F   P I P E L I N E    
          ===================================

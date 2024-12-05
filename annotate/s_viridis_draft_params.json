@@ -1,0 +1,6 @@
+{
+	"meta" : "sminthurus_viridis_draft",
+	"genome" : "$launchDir/data/results/genomes/sminthurus_viridis/qlSmiViri2.20241204.primary.draft.fa",
+	"prot_seq" : "$launchDir/data/results/braker2/dbs/Arthropoda.allacmaFusca.fa",
+	"outdir" : "$launchDir/data/results/annotations/${params.meta}",
+}
