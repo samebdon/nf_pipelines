@@ -56,6 +56,8 @@ workflow orthodiver_flow {
         main:
           // TO DO filter_orthogroups(species_1, species_2, ortholog_seqs)
           mafft_batch(ortholog_seqs.flatten().collect())
+
+          // amend these two for no outgroup fasta?
           get_orthogroup_haps_batch(mafft_batch.out, hap_fastas_1, hap_fastas_2)
           translatorx_pair(mafft_batch.out, get_orthogroup_haps_batch.out.flatten())
           orthodiver(translatorx_pair.out)
@@ -63,6 +65,10 @@ workflow orthodiver_flow {
 
         emit:
           agg_orthodiver.out
+}
+
+workflow orthodiver_flow_no_outgroup_vcf {
+
 }
 
 workflow merge_orthodiver_gene_pop {

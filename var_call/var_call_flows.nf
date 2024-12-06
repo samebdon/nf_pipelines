@@ -59,7 +59,7 @@ workflow var_call_flow_single_se {
         main:
           bwaIndex(genome)
           bwaMem_se(genome, bwaIndex.out, reads, species)
-	  			sortBamSambamba(bwaMem.out)
+	  			sortBamSambamba(bwaMem_se.out)
           markDupesSambamba(sortBamSambamba.out)
 	 			  indexBamSambamba(markDupesSambamba.out.meta_bam)
           mosdepth(markDupesSambamba.out.meta_bam.join(indexBamSambamba.out), 8)
