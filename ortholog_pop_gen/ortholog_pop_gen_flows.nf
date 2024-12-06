@@ -1,5 +1,7 @@
 include { get_best_cds_bed; get_best_pep_fasta; get_callable_cds_bed; make_genome_file; get_mask_bed; get_samples; remove_missing_vcf; generate_loci; generate_effective_fasta_AGAT; orthofinder; get_SCO_genes; filter_annotation; filter_orthogroups; mafft; mafft_batch; dupe_prot_fasta; get_orthogroup_haps; get_orthogroup_haps_batch; translatorx; translatorx_pair;orthodiver;agg_orthodiver;merge_results} from './ortholog_pop_gen_tasks.nf'
 
+// can take get best pep fasta out of this so can be independent of second sample vcf
+
 workflow gen_haps_flow {
         take:
           species

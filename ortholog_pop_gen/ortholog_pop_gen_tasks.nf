@@ -2,7 +2,6 @@
 // matrix of sample comparisons at each gene at 0d and 4d sites, 
 // where the diagonal would be diversity?
 
-
 process get_best_cds_bed {
         publishDir params.outdir, mode:'copy'
         memory '4G'
