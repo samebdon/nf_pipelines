@@ -47,6 +47,7 @@ workflow infer_orthology_flow {
 }
 
 // assuming 2 protein files in prot_dir for now. should generalise for any number of samples
+// need an orthodiver flow with no outgroup vcf
 workflow orthodiver_flow {
         take:
           hap_fastas_1

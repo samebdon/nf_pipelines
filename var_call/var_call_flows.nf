@@ -53,12 +53,12 @@ workflow var_call_flow_single_se {
         take:
 	  			genome
 	  			genome_index
-	  			fastq
+	  			reads
 	  			repeat_bed
 	  			species
         main:
           bwaIndex(genome)
-          bwaMem_se(genome, bwaIndex.out, read_file, species)
+          bwaMem_se(genome, bwaIndex.out, reads, species)
 	  			sortBamSambamba(bwaMem.out)
           markDupesSambamba(sortBamSambamba.out)
 	 			  indexBamSambamba(markDupesSambamba.out.meta_bam)
