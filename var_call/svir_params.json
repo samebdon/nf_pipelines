@@ -1,0 +1,8 @@
+{
+	"genome" : "${launchDir}/data/results/genomes/sminthurus_viridis/qlSmiViri2.20241204.primary.draft.draftmask.fa",
+	"genome_index" : "${launchDir}/data/results/genomes/sminthurus_viridis/qlSmiViri2.20241204.primary.draft.draftmask.fa.fai",
+	"reads" : "${launchDir}/data/raw_data/svir.{1,2}.fastq",
+	"repeat_bed" : "${launchDir}/data/results/annotate/sminthurus_viridis_draft/sminthurus_viridis_draft_repeats.bed",
+	"outdir" : "${launchDir}/data/results/var_call/sminthurus_viridis/",
+	"species" : "sminthurus_viridis",
+}
