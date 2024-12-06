@@ -21,3 +21,16 @@ workflow braker2_only_flow {
         main:
           braker2(meta.combine(genome), prot_seq)
 }
+
+workflow braker2_flow_rm{
+        take:
+          meta
+          genome
+          prot_seq
+
+        main:
+          unmask_genome(meta, genome)
+          repeatmodeler(unmask_genome.out)
+          repeatmasker(unmask_genome.out, repeatmodeler.out)
+          braker2(repeatmasker.out, prot_seq)
+}

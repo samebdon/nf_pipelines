@@ -15,9 +15,10 @@ log.info """\
          """
          .stripIndent()
 
-include { braker2_flow; braker2_only_flow } from './annotate_flows.nf'
+include { braker2_flow; braker2_only_flow; braker2_flow_rm } from './annotate_flows.nf'
 
 workflow {
         braker2_flow(params.meta, params.genome, params.prot_seq)
+        // braker2_flow_rm(params.meta, params.genome, params.prot_seq)
         // braker2_only_flow(params.meta, params.genome, params.prot_seq)
 }

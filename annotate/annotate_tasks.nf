@@ -24,9 +24,9 @@ process earlGrey {
         tuple val(meta), path(genome)
 
         output:
-        path("./results/*_EarlGrey"), emit: all
-        path("./results/*/*_summaryFiles/*.filteredRepeats.bed"), emit: repeat_bed
-	tuple val(meta), path("./results/*/*_summaryFiles/*.softmasked.fasta"), emit: softmasked_genome
+        path("./results/${meta}_EarlGrey"), emit: all
+        path("./results/${meta}_EarlGrey/${meta}_summaryFiles/${meta}.filteredRepeats.bed"), emit: repeat_bed
+	tuple val(meta), path("./results/${meta}_EarlGrey/${meta}_summaryFiles/${meta}.softmasked.fasta"), emit: softmasked_genome
         
 	script:
         """
@@ -59,5 +59,51 @@ process braker2 {
                 --gff3 \
                 --prot_seq=${prot_seq} \
                 --useexisting
+        """
+}
+
+process repeatmodeler{
+        cpus 72
+        queue long
+
+        input:
+        tuple val(meta), path(genome)
+
+        output:
+        tuple val(meta), path("${meta}_repeat_db")
+
+        script:
+        """
+        BuildDatabase -name ${meta}_repeat_db ${genome}
+        RepeatModeler -database ${meta}_repeat_db -pa ${task.cpus} -LTRStruct
+        """
+}
+
+process repeatmasker{
+        cpus 72
+        queue long
+
+        input:
+        tuple val(meta), path(genome)
+        tuple val(rp_meta), path(repeat_db)
+
+        output:
+        tuple val(meta), path("${genome}.masked")
+
+        script:
+        """
+        RepeatMasker -pa ${task.cpus} -lib ${repeat_db} -xsmall ${genome}
+        """
+}
+
+process tandem_repeats_finder{
+        input:
+        tuple val(meta), path(genome)
+
+        output:
+
+        script:
+        """
+
         """
 }
