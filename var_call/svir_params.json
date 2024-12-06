@@ -1,7 +1,7 @@
 {
 	"genome" : "${launchDir}/data/results/annotations/sminthurus_viridis/earlgrey/sminthurus_viridis_draft_summaryFiles/sminthurus_viridis_draft.softmasked.fasta",
 	"genome_index" : "${launchDir}/data/results/annotations/sminthurus_viridis/earlgrey/sminthurus_viridis_draft_summaryFiles/sminthurus_viridis_draft.softmasked.fasta.fai",
-	"reads" : "${launchDir}/data/raw_data/svir/svir.{1,2}.fastq.gz",
+	"reads" : "${launchDir}/data/raw_data/reseq/lipothrix_lubbocki/*_{1,2}.fastp.fastq",
 	"repeat_bed" : "${launchDir}/data/results/annotations/sminthurus_viridis/earlgrey/sminthurus_viridis_draft_summaryFiles/sminthurus_viridis_draft.filteredRepeats.bed",
 	"outdir" : "${launchDir}/data/results/var_call/sminthurus_viridis/",
 	"species" : "sminthurus_viridis",
