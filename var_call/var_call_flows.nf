@@ -75,16 +75,16 @@ workflow var_call_flow_single_se {
 
 workflow filter_vcf {
 
-	take:
-	genome
-	vcf
-	callable_bed
+				take:
+					genome
+					vcf
+					callable_bed
 
-	main:
-	bcftools_filter(genome, vcf)
-	generate_fail_bed(bcftools_filter.out)
-	generate_pass_vcf(bcftools_filter.out)
-	bedtools_subtract(callable_bed, generate_fail_bed.out)
-	bcftools_sort(generate_pass_vcf.out)
-	bcftools_index(bcftools_sort.out)
+				main:
+					bcftools_filter(genome, vcf)
+					generate_fail_bed(bcftools_filter.out)
+					generate_pass_vcf(bcftools_filter.out)
+					bedtools_subtract(callable_bed, generate_fail_bed.out)
+					bcftools_sort(generate_pass_vcf.out)
+					bcftools_index(bcftools_sort.out)
 }

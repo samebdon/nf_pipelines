@@ -1,5 +1,7 @@
-include { get_best_cds_bed; get_best_pep_fasta; get_callable_cds_bed; make_genome_file; get_mask_bed; get_samples; remove_missing_vcf; generate_loci; generate_effective_fasta_AGAT; orthofinder; get_SCO_genes; filter_annotation; filter_orthogroups; mafft; mafft_batch; dupe_prot_fasta; get_orthogroup_haps; get_orthogroup_haps_batch; translatorx; translatorx_pair;orthodiver;agg_orthodiver;merge_results} from './ortholog_pop_gen_tasks.nf'
+include { get_best_cds_bed; get_best_pep_fasta; get_callable_cds_bed; make_genome_file; get_mask_bed; get_samples; remove_missing_vcf; generate_loci; generate_effective_fasta_AGAT;generate_effective_fasta_AGAT_no_vcf; orthofinder; get_SCO_genes; filter_annotation; filter_orthogroups; mafft; mafft_batch; dupe_prot_fasta; get_orthogroup_haps; get_orthogroup_haps_batch; translatorx; translatorx_pair;orthodiver;agg_orthodiver;merge_results} from './ortholog_pop_gen_tasks.nf'
 
+// remove non informative fastas earlier
+// add orthogroup filtering step to generalise for inferring orthology with >2 species
 // can take get best pep fasta out of this so can be independent of second sample vcf
 
 workflow gen_haps_flow {
@@ -27,6 +29,25 @@ workflow gen_haps_flow {
           get_best_pep_fasta.out
 }
 
+workflow gen_haps_flow_no_vcf {
+        take:
+          species
+          genome_fasta
+          annotation
+          pep_fasta
+
+        main:
+          get_best_cds_bed(species, annotation)
+          get_best_pep_fasta(get_best_cds_bed.out.bed, pep_fasta)
+          make_genome_file(genome_fasta)
+          get_mask_bed(get_best_cds_bed.out.bed, make_genome_file.out)
+          generate_effective_fasta_AGAT_no_vcf(species, genome_fasta, get_best_cds_bed.out.gff)
+
+        emit:
+          generate_effective_fasta_AGAT_no_vcf.out
+          get_best_pep_fasta.out
+}
+
 workflow infer_orthology_flow {
         take:
           prot_fastas
@@ -48,6 +69,7 @@ workflow infer_orthology_flow {
 
 // assuming 2 protein files in prot_dir for now. should generalise for any number of samples
 // need an orthodiver flow with no outgroup vcf
+// maybe the orthodiver flow is the same actually its just the earlier bit that changes?
 workflow orthodiver_flow {
         take:
           hap_fastas_1
@@ -67,10 +89,6 @@ workflow orthodiver_flow {
           agg_orthodiver.out
 }
 
-workflow orthodiver_flow_no_outgroup_vcf {
-
-}
-
 workflow merge_orthodiver_gene_pop {
         take:
           agg_orthodiver
@@ -81,10 +99,3 @@ workflow merge_orthodiver_gene_pop {
         main:
           merge_results(agg_orthodiver, gene_pop_1, gene_pop_2, orthogroups)
 }
-
-
-// THOUGHTS AND TODOS
-
-// remove non informative fastas earlier
-// hard mask earlier
-// add orthogroup filtering step to generalise for inferring orthology with >2 species

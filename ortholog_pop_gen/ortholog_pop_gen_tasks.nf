@@ -166,6 +166,26 @@ process generate_effective_fasta_AGAT {
         """
 }
 
+process generate_effective_fasta_AGAT_no_vcf {
+        memory '4G'
+        scratch true
+
+        input:
+        val(meta)
+        path(genome_fasta)
+        tuple val(gff_meta), path(gff)
+
+        output:
+        tuple path("ref.${meta}.snp.1.cds.fasta"), path("ref.${meta}.snp.2.cds.fasta")
+
+        script:
+        """
+        agat_sp_extract_sequences.pl --gff ${gff} --fasta ${genome_fasta} -t exon --merge -o ref.${meta}.snp.1.cds.fasta.tmp
+        awk '/^>/ {printf("\\n%s\\n",\$0);next; } { printf("%s",\$0);}  END {printf("\\n");}' < ref.${meta}.snp.1.cds.fasta.tmp | tail -n +2 > ref.${meta}.snp.1.cds.fasta
+        cp ref.${meta}.snp.1.cds.fasta ref.${meta}.snp.2.cds.fasta
+        """
+}
+
 // I think it seems ok for now, its at least given me individuals with two haplotypes different from the reference
 // but i havent seen a heterozygous individual yet
 // I might go with this for now and if in the future it hasnt applied the haplotypes right i can fix it then
