@@ -28,7 +28,7 @@ include { gene_pop_flow_SFS as gene_pop_flow_SFS_2 } from '../gene_pop/gene_pop_
 workflow {
         gen_haps_flow_1(params.species_1, params.genome_fasta_1, params.vcf_1, params.callable_bed_1, params.annot_1, params.prot_fasta_1)
         gen_haps_flow_no_vcf(params.species_2, params.genome_fasta_2, params.annot_2, params.prot_fasta_2)
-        infer_orthology_flow(gen_haps_flow_1.out[1].concat(gen_haps_flow_2.out[1]).collect(), params.annot_1, params.annot_2)
+        infer_orthology_flow(gen_haps_flow_1.out[1].concat(gen_haps_flow_no_vcf.out[1]).collect(), params.annot_1, params.annot_2)
         orthodiver_flow(gen_haps_flow_1.out[0], gen_haps_flow_no_vcf.out[0], infer_orthology_flow.out[1])
         gene_pop_flow_SFS_1(params.genome_fasta_1, params.genome_dict_1, params.vcf_1 ,params.vcf_index_1, infer_orthology_flow.out[2], params.species_1, params.sex_linked_contigs_1)
 }
