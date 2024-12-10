@@ -404,7 +404,7 @@ process get_orthogroup_haps_batch {
 // can i run all of this in get orthogroup haps?
 
 process translatorx {
-        scratch true
+        //scratch true
 
         input:
         tuple path(hap_fasta), path(prot_fasta)
@@ -428,7 +428,7 @@ process translatorx {
 
 process translatorx_pair {
         memory '4G'
-        scratch true
+        //scratch true
 
         input:
         path(prot_fastas, stageAs: "prot_fastas/*")
