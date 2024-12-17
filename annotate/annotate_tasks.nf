@@ -96,14 +96,14 @@ process repeatmasker{
         """
 }
 
-process tandem_repeats_finder{
-        input:
-        tuple val(meta), path(genome)
-
-        output:
-
-        script:
-        """
-
-        """
-}
+//process tandem_repeats_finder{
+//        input:
+//        tuple val(meta), path(genome)
+//
+//        output:
+//
+//        script:
+//        """
+//
+//        """
+//}

@@ -1,4 +1,4 @@
-include {unmask_genome; earlGrey; braker2} from './annotate_tasks.nf'
+include {unmask_genome; earlGrey; braker2; repeatmodeler; repeatmasker} from './annotate_tasks.nf'
 
 workflow braker2_flow {
         take:

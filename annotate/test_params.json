@@ -1,0 +1,6 @@
+{
+	"meta" : "GCA_949748255",
+	"genome" : "/lustre/scratch126/tol/teams/jaron/projects/diptera_alg/00_genomes/ncbi_dataset/data/GCA_949748255.1/GCA_949748255.1_idEusHist1.1_genomic.fna",
+	"prot_seq" : "/lustre/scratch126/tol/teams/jaron/projects/diptera_alg/07_annotation/protein_Dm_Ang.faa",
+	"outdir" : "$launchDir/data/results/annotations/GCA_949748255",
+}
