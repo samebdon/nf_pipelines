@@ -75,7 +75,7 @@ process repeatmodeler{
         script:
         """
         BuildDatabase -name ${meta}_repeat_db ${genome}
-        RepeatModeler -database ${meta}_repeat_db -pa ${task.cpus} -LTRStruct
+        RepeatModeler -database ${meta}_repeat_db -threads ${task.cpus} -LTRStruct
         """
 }
 
@@ -92,7 +92,7 @@ process repeatmasker{
 
         script:
         """
-        RepeatMasker -pa ${task.cpus} -lib ${repeat_db} -xsmall ${genome}
+        RepeatMasker -threads ${task.cpus} -lib ${repeat_db} -xsmall ${genome}
         """
 }
 
