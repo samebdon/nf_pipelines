@@ -85,10 +85,10 @@ if __name__ == "__main__":
         acc_bed_f = None
     genome_file = args["--genome"]
 
-    if args["--name"]:
-        name = str(args["--name"])
-    else:
-        name = '.'.join(bed_f.split('.')[0:-1])
+    #if args["--name"]:
+    #    name = str(args["--name"])
+    #else:
+    name = '.'.join(bed_f.split('.')[0:-1])
 
     if args["--output"]:
         out_f = str(args["--output"])
