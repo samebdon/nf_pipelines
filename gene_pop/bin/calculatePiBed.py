@@ -3,12 +3,12 @@
 """calculatePiBed.py
 
 Usage:
-calculatePiBed.py -v <FILE> -b <FILE> -a <FILE> -g <FILE> [-h -n <STR> -o <FILE> -l <STR>]
+calculatePiBed.py -v <FILE> -b <FILE> -g <FILE> [-h -a <FILE> -n <STR> -o <FILE> -l <STR>]
 
 Options:
 -v, --vcf <FILE>	       VCF file
 -b, --bed <FILE>	       Feature bed file (chrom, start, stop, feature)
--a, --accessible <FILE>    Accessible bed 
+-a, --accessible <FILE>    Accessible bed (Optional)
 -n, --name <STR>           Chromosome name
 -o, --output <FILE>	       Output file name
 -l, --label <STR>          Result label
@@ -79,13 +79,16 @@ if __name__ == "__main__":
 
     vcf_f = args["--vcf"]
     bed_f = args["--bed"]
-    acc_bed_f = args["--accessible"]
+    if args["--accessible"]:
+        acc_bed_f = args["--accessible"]
+    else:
+        acc_bed_f = None
     genome_file = args["--genome"]
 
-    #if args["--name"]:
-    #    name = str(args["--name"])
-    #else:
-    #    name = "NA"
+    if args["--name"]:
+        name = str(args["--name"])
+    else:
+        name = '.'.join(bed_f.split('.')[0:-1])
 
     if args["--output"]:
         out_f = str(args["--output"])
@@ -99,10 +102,10 @@ if __name__ == "__main__":
 
     results = []
 
-    name = '.'.join(bed_f.split('.')[0:-1])
 
     genome_df = pd.read_csv(genome_file, sep="\t", names=["chrom", "length"])
-    accessible_array = get_accessible(acc_bed_f, name)
+    if acc_bed_f:
+        accessible_array = get_accessible(acc_bed_f, name)
     snp_pos, ac, gt_count_arr, snp_ga, snp_dp = parse_vcf(vcf_f, chromosome=name)
 
     dp_arr = np.concatenate((snp_pos.reshape(-1, 1), snp_dp), axis=1)
@@ -137,66 +140,91 @@ if __name__ == "__main__":
     # accessible array is true/false arr made of 0d or 4d site positions on one chrom
     # so this should get the 0d or 4d folded SFS for the analysed chrom
 
-    is_acc = asarray_ndim(accessible_array, 1, allow_none=True)
-    pos, ac_is_acc = mask_inaccessible(is_acc, idx, ac)
-    biallelic_ac = ac_is_acc.compress(ac_is_acc.is_biallelic()[:], axis=0)[:, :2]
+    if acc_bed_f:
+        is_acc = asarray_ndim(accessible_array, 1, allow_none=True)
+        pos, ac_is_acc = mask_inaccessible(is_acc, idx, ac)
+        biallelic_ac = ac_is_acc.compress(ac_is_acc.is_biallelic()[:], axis=0)[:, :2]
 
-    # print MAC arr and pos
-    biallelic_pos = pos[ac_is_acc.is_biallelic()[:]]
-    biallelic_arr = np.append(
-        biallelic_ac, biallelic_pos.reshape(len(biallelic_pos), 1), axis=1
-    )
-    np.savetxt(
-        f"{name}.{result_label}.biallelic_ac.txt",
-        biallelic_arr,
-        delimiter="\t",
-        header="ref_allele_count\talt_allele_count\tpos",
-        comments="",
-    )
+        # print MAC arr and pos
+        biallelic_pos = pos[ac_is_acc.is_biallelic()[:]]
+        biallelic_arr = np.append(
+            biallelic_ac, biallelic_pos.reshape(len(biallelic_pos), 1), axis=1
+        )
+        np.savetxt(
+            f"{name}.{result_label}.biallelic_ac.txt",
+            biallelic_arr,
+            delimiter="\t",
+            header="ref_allele_count\talt_allele_count\tpos",
+            comments="",
+        )
 
-    fifton_pos = biallelic_arr[biallelic_arr[:, 0] == biallelic_arr[:, 1]][:, 2]
-    fifton_arr = np.isin(snp_pos, fifton_pos)
-    fifton_ga = snp_ga[fifton_arr]
-    ## is this bit using the right pos?
+        fifton_pos = biallelic_arr[biallelic_arr[:, 0] == biallelic_arr[:, 1]][:, 2]
+        fifton_arr = np.isin(snp_pos, fifton_pos)
+        fifton_ga = snp_ga[fifton_arr]
+        ## is this bit using the right pos?
 
-    fifton_count_arr = np.array(
-        [
-            fifton_ga.count_hom(axis=1),
-            fifton_ga.count_het(axis=1),
-            fifton_ga.count_hom_alt(axis=1),
-            fifton_pos,
-        ]
-    ).transpose()
+        fifton_count_arr = np.array(
+            [
+                fifton_ga.count_hom(axis=1),
+                fifton_ga.count_het(axis=1),
+                fifton_ga.count_hom_alt(axis=1),
+                fifton_pos,
+            ]
+        ).transpose()
 
-    np.savetxt(
-        f"{name}.{result_label}.fifton_gc.txt",
-        fifton_count_arr,
-        delimiter="\t",
-        header="ref_hom_count\thet_count\talt_hom_count\tpos",
-        comments="",
-    )
+        np.savetxt(
+            f"{name}.{result_label}.fifton_gc.txt",
+            fifton_count_arr,
+            delimiter="\t",
+            header="ref_hom_count\thet_count\talt_hom_count\tpos",
+            comments="",
+        )
 
-    sfs = allel.sfs_folded(biallelic_ac)
+        sfs = allel.sfs_folded(biallelic_ac)
 
-    total = np.sum(accessible_array)
-    extra_invar = total - np.sum(sfs)
-    sfs[0] = sfs[0] + extra_invar
-    np.savetxt(f"{result_label}.{name}.sfs.txt", sfs)
+        total = np.sum(accessible_array)
+        extra_invar = total - np.sum(sfs)
+        sfs[0] = sfs[0] + extra_invar
+        np.savetxt(f"{result_label}.{name}.sfs.txt", sfs)
 
-    for interval in bed:
-        (chrom, start, stop, feature) = interval
+    for i, interval in enumerate(bed):
         try:
-            pi = allel.sequence_diversity(
-                idx,
-                ac,
-                start=int(start) + 1,
-                stop=int(stop), #is this right for indexing, i think it is?
-                is_accessible=accessible_array,
-            )
-            results.append((chrom, feature, pi))
+            (chrom, start, stop, feature) = interval
+            bed_feature = True
+        except ValueError:
+            (chrom, start, stop ) = interval
+            bed_feature = False
+        try:
+            if acc_bed_f:
+                pi = allel.sequence_diversity(
+                    idx,
+                    ac,
+                    start=int(start) + 1,
+                    stop=int(stop), #is this right for indexing, i think it is?
+                    is_accessible=accessible_array,
+                )
+            else:
+                pi = allel.sequence_diversity(
+                    idx,
+                    ac,
+                    start=int(start) + 1,
+                    stop=int(stop), #is this right for indexing, i think it is?
+                )
+            if bed_feature:
+                results.append((chrom, feature, pi))
+            else:
+                results.append((chrom, start, stop, pi))
         except KeyError:
-            results.append((chrom, feature, "NaN"))
+            if bed_feature:
+                results.append((chrom, feature, "NaN"))
+            else:
+                results.append((chrom, start, stop, "NaN"))
 
-    pd.DataFrame(results, columns=["chrom", "feature", result_label]).to_csv(
-        out_f, sep="\t", index=False
-    )
+    try:
+        pd.DataFrame(results, columns=["chrom", "feature", result_label]).to_csv(
+            out_f, sep="\t", index=False
+        )
+    except ValueError:
+        pd.DataFrame(results, columns=["chrom", "start", "stop", result_label]).to_csv(
+            out_f, sep="\t", index=False
+        )
