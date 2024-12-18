@@ -65,7 +65,7 @@ process braker2 {
 process repeatmodeler{
         cpus 72
         memory '32G'
-        queue long
+        queue 'long'
 
         input:
         tuple val(meta), path(genome)
@@ -83,7 +83,7 @@ process repeatmodeler{
 process repeatmasker{
         cpus 72
         memory '32G'
-        queue long
+        queue 'long'
 
         input:
         tuple val(meta), path(genome)
