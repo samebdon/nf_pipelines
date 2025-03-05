@@ -64,7 +64,7 @@ process braker2 {
 
 process repeatmodeler{
         cpus 72
-        memory '32G'
+        memory '96G'
         queue 'long'
 
         input:

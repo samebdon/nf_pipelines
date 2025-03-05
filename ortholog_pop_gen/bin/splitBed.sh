@@ -1,1 +1,15 @@
-/lustre/scratch126/tol/teams/jaron/projects/springtails_haploid_selection/nextflow/gene_pop/bin/splitBed.sh
+#!/bin/bash
+
+## Usage ./splitBed.sh input.bed
+
+input=$1
+
+mkdir beds
+for chr in `cut -f 1 $input | sort | uniq`;
+do
+	grep -w $chr $input > beds/$chr.bed
+	count=$(cat beds/$chr.bed | wc -l)
+	if [[ $count -lt 100 ]]; then
+		rm beds/$chr.bed
+	fi
+done
