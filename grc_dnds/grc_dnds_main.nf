@@ -7,10 +7,11 @@ log.info """\
          """
          .stripIndent()
 
-include { grc_dnds_flow } from './grc_dnds_flows.nf'
+include { orthofinder_flow; grc_dnds_flow } from './grc_dnds_flows.nf'
 
 workflow {
-        grc_dnds_flow(params.braker_tsv, params.protein_tsv)
+        //orthofinder_flow(params.braker_tsv, params.protein_tsv)
+        grc_dnds_flow(params.braker_tsv, params.protein_tsv, params.msa, params.gene_counts, params.selected_protein_tsvs)
 }
 
 // mamba activate grc_dnds

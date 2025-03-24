@@ -1,6 +1,9 @@
 {
 	"braker_tsv" : "${launchDir}/data/inputs/sciaridae_braker.tsv",
         "protein_tsv" : "${launchDir}/data/inputs/sciaridae_prot.tsv",
+	"msa" : "${launchDir}/data/results/grc_dnds/orthofinder_results/Results_Mar19/MultipleSequenceAlignments/*",
+	"gene_counts" : "${launchDir}/data/results/grc_dnds/orthofinder_results/Results_Mar19/Orthogroups/Orthogroups.GeneCount.tsv",
+	"selected_protein_tsvs" : "${launchDir}/data/results/grc_dnds/orthofinder_results/Results_Mar19/Orthologues/*.tsv",
 	"outdir" : "${launchDir}/data/results/grc_dnds"
 }
 

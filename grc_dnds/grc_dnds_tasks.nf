@@ -54,7 +54,9 @@ process orthofinder {
         tuple val(meta_list), path(prot_fastas, stageAs: "fastas/*")
 
         output:
-        path("orthofinder_results/*")
+        path("orthofinder_results/*"), emit: all
+        path("orthofinder_results/*/Orthogroups/Orthogroups.GeneCount.tsv"), emit: gene_count
+        path("orthofinder_results/*/MultipleSequenceAlignments/*"), emit: msa
 
         script:
         """
@@ -63,17 +65,37 @@ process orthofinder {
 }
 
 // Here Fede runs analyse_alignments_V2.R and filters OGs differently
+// Also looks at quality but doesnt filter on quality
+
 process select_orthogroups{
+        publishDir params.outdir, mode:'copy'
 
         input:
-        path(Orthogroups.GeneCount.tsv)
+        path(gene_counts)
 
         output:
         path('*.SCOs.txt')
 
         script:
         """
-        select_orthogroups.py ${Orthogroups.GeneCount.tsv}
+        select_orthogroups.py ${gene_counts}
+        """
+}
+
+process select_msa{
+        publishDir params.outdir, mode:'copy'
+
+        input:
+        tuple val(meta), path(orthoset)
+        path(msas, stageAs: "alignments/*")
+
+        output:
+        tuple val(meta), path("selected_alignments/*")
+
+        script:
+        """
+        mkdir selected_alignments
+        parallel -j1 'mv alignments/{}.fa selected_alignments/{}.fa' :::: ${orthoset}
         """
 }
 
@@ -100,27 +122,45 @@ process concat_orthogroup_topologies{
 // Uses BMGE to filter unreliably aligned columns 
 // https://academic.oup.com/sysbio/article/64/5/778/1685763
 
-// is this step needed for codeml? we have trees from orthofinder?
-// look at /lustre/scratch126/tol/teams/jaron/users/fede/CDS_seqs/CleanAlignments/ for input
-// what does -b do?
 // Is it just because of the filtering and we could use the trees straight out of orthofinder?
 // Can compare the orthofinder trees to iq trees
-// Maybe here is where for each SCO set we can remove the relevant datasets from the alignment
-// And then generate a new alignment with iqtree for codeml
-// Then the previous phylogeny can be used to account for shared stuff?
-// Where does the codon based alignment come in?
 
-process iqtree2 {
+process iqtree{
+        publishDir params.outdir, mode:'copy'
+        cpus 32
+        memory '64G'
 
         input:
-        path(orthogroup_subset)
-        path(aa.fa)
+        tuple val(meta), path(alignments, stageAs: "alignments/*")
+        //val{iqtree_model}
+        //val{iqtree_outgroup}
 
         output:
+        tuple val(meta), path("alignments/*.treefile"), emit: tree_files
 
         script:
         """
-        iqtree2 -s ${aa.fa} --seed 1234 -b 100 -redo
+        parallel -j4 'iqtree2 -s {} -T 8 -B 1000' ::: alignments/*
+        """
+}
+
+process get_orthogroup_cds{
+
+        input:
+        tuple val(meta), path(orthoset)
+        path(cds, stageAs: "fastas/*")
+        path(prots, stageAs: "selected_proteins/*")
+
+        output:
+        tuple val(meta), path("orthoset_cds_fastas/*")
+
+        script:
+        """
+        mkdir sl_fastas
+        mkdir orthoset_cds_fastas
+
+        parallel -j1 'multi2singlefasta.sh < {} > sl_fastas/{/.}.sl.fa' ::: fastas/*
+        get_orthogroup_cds.py ${orthoset} selected_proteins/ sl_fastas/ 
         """
 }
 
@@ -129,9 +169,36 @@ process iqtree2 {
 // run_codeml.pl
 // optim_blen.ctl
 // two_omegas.ctl
+
+// need trees from iqtree
+// need codon alignments
+// need to get cds for the prot fa dataset
+// need to use the protein alignments with the cds's to make nucleotide alignments for each orthogroup
+
+// fede used macsev2 which translates codon sequences to amino acids for alignment, is it better to use the prot sequences themselves?
+
+process macsev2 {
+        publishDir params.outdir, mode:'copy'
+        cpus 4
+        memory '8G'
+
+        input:
+        tuple val(meta), path(cds, stageAs: "fastas/*")
+
+        output:
+        tuple val(meta), path("*")
+
+        script:
+        """
+        mkdir alignments
+        parallel -j4 'macse -prog alignSequences -seq {}' ::: fastas/*
+        """
+}
+
 process codeml {
-
+        publishDir params.outdir, mode:'copy'
         input:
+        tuple val(meta), path(alignment), path(tree)
 
         output:
 
@@ -140,22 +207,3 @@ process codeml {
 
         """
 }
-
-// Is there a way we could make the most of tskit to
-// plot the location of genes (using the gff3)?
-process plot_dnds_distributions {
-
-        input:
-
-        output:
-
-        script:
-        """
-
-        """
-}
-
-
-// Other to dos
-// Look at why genes are split in the GRCs vs core
-// Can I do the alignments with translatorx?
