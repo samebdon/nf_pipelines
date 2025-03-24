@@ -1,9 +1,0 @@
-{
-	"input_tsv" : "${launchDir}/data/infer_alg_input.tsv",
-	"busco_db" : "arthropoda_odb10",
-	"busco_download_path" : "/lustre/scratch123/tol/resources/busco/v5/",
-	"iqtree_model" : "Q.insect+I+G4",
-	"iqtree_outgroup" : "qeLepCurv1",
-	"taxon" : "collembola",
-	"outdir" : "${launchDir}/data/results/infer_alg_collembola_trial"
-}
