@@ -1,4 +1,4 @@
-include {filterIncompleteGeneModelsAGAT; getLongestIsoformAGAT; select_proteins; orthofinder; select_orthogroups; select_msa; concat_orthogroup_topologies; iqtree; get_orthogroup_cds; macsev2; codeml} from './grc_dnds_tasks.nf'
+include {filterIncompleteGeneModelsAGAT; getLongestIsoformAGAT; select_proteins; orthofinder; select_orthogroups; select_msa; concat_orthogroup_topologies; iqtree; get_orthogroup_cds; macsev2; select_comparisons; codeml} from './grc_dnds_tasks.nf'
 
 workflow orthofinder_flow{
 
@@ -128,7 +128,9 @@ workflow grc_dnds_flow {
          // align_CDS
           macsev2(get_orthogroup_cds.out)
 
+          select_comparisons(macsev2.out.join(iqtree.out))
+
          // codeml
-         // codeml(macsev2.out, iqtree.out)
+         // codeml(select_comparisons.out)
 
 }

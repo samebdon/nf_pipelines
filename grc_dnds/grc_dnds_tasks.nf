@@ -40,7 +40,7 @@ process select_proteins{
 
         script:
         """
-        select_proteins.sh ${gff} ${prot_fa} > ${meta}.selected_proteins.fa || true
+        select_proteins.sh ${gff} ${prot_fa} > ${meta}.selected_proteins.fa 
         """
 
 }
@@ -136,11 +136,13 @@ process iqtree{
         //val{iqtree_outgroup}
 
         output:
-        tuple val(meta), path("alignments/*.treefile"), emit: tree_files
+        tuple val(meta), path("${meta}_trees/*")
 
         script:
         """
+        mkdir ${meta}_trees
         parallel -j4 'iqtree2 -s {} -T 8 -B 1000' ::: alignments/*
+        mv alignments/*.treefile ${meta}_trees
         """
 }
 
@@ -179,19 +181,40 @@ process get_orthogroup_cds{
 
 process macsev2 {
         publishDir params.outdir, mode:'copy'
-        cpus 4
-        memory '8G'
+        cpus 32
+        memory '48G'
 
         input:
         tuple val(meta), path(cds, stageAs: "fastas/*")
 
         output:
-        tuple val(meta), path("*")
+        tuple val(meta), path("${meta}_alignments/*")
 
         script:
         """
-        mkdir alignments
-        parallel -j4 'macse -prog alignSequences -seq {}' ::: fastas/*
+        mkdir ${meta}_alignments
+        parallel -j32 'macse -prog alignSequences -seq {}' ::: fastas/* || true
+        mv fastas/*.cds_NT.fa ${meta}_alignments
+        """
+}
+
+// use trees to select pairs of NT alignments for codeml
+// check 1 grc dataset per orthogroup
+
+process select_comparisons{
+        publishDir params.outdir, mode:'copy'
+
+        input:
+        tuple val(meta), path(cds, stageAs: "fastas/*"), path(trees, stageAs: "trees/*")
+
+        output:
+        tuple val(meta), path("pruned_alignments/*"), path("pruned_trees/*"), path("*.dnds.tsv")
+
+        script:
+        """
+        mkdir pruned_alignments
+        mkdir pruned_trees
+        select_comparisons.py fastas trees pruned_alignments pruned_trees ${meta}
         """
 }
 
