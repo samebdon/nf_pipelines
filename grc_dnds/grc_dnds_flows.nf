@@ -53,6 +53,47 @@ workflow orthofinder_flow{
          orthofinder.out.msa
 }
 
+workflow orthofinder_flow_one_tsv{
+
+        take:
+         input_tsv // channel: [ val(meta), /path/to/genome, /path/to/cds, /path/to/gff, /path/to/prot_fa ]
+
+        main:
+
+         // parse input_tsv
+         Channel
+                .fromPath( input_tsv )
+                .splitCsv( header: true, sep: '\t')
+                .multiMap{ row -> 
+                        genome: [row.meta, row.genome]
+                        cds:  [row.meta, row.cds]
+                        gff: [row.meta, row.gff]
+                        prot_fa: [row.meta, row.prot_fa]
+                        }
+                .set{ input_ch }
+
+         // add species prefix to fasta headers of both cds and prot here when i get the chance, should be able to do it with sed
+
+         // select suitable proteins for orthology inference
+         filterIncompleteGeneModelsAGAT(input_ch.gff.join(input_ch.genome))
+         getLongestIsoformAGAT(filterIncompleteGeneModelsAGAT.out)
+         select_proteins(getLongestIsoformAGAT.out.join(input_ch.prot_fa))
+
+         // combine denovo and preprocessed protein datasets
+         select_proteins.out
+                .collect( flat:false )
+                .map{ it.transpose() }
+                .set { selected_prot_ch }
+
+         // orthology inference
+         orthofinder(selected_prot_ch)
+
+         emit:
+         orthofinder.out.all
+         orthofinder.out.gene_count
+         orthofinder.out.msa
+}
+
 workflow grc_dnds_flow {
 
         take:

@@ -1,5 +1,7 @@
 process trimReads {
         publishDir params.outdir, mode:'copy'
+        cpus 4
+        memory '4G'
 
         input:
         tuple val(sample_id), path(reads)
@@ -16,6 +18,8 @@ process trimReads {
 
 process fastqc {
         tag "FASTQC on $sample_id"
+        cpus 4
+        memory '4G'
         
         input:
         tuple val(sample_id), path(reads)
@@ -63,6 +67,8 @@ process indexGenomeHisat2 {
 
 process mapToGenomeHisat2 {
         publishDir params.outdir, mode:'copy'
+        cpus 12
+        memory '12G'
 
         input:
         path(index)

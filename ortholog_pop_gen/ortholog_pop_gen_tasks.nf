@@ -168,7 +168,7 @@ process generate_effective_fasta_AGAT {
 
 process generate_effective_fasta_AGAT_no_vcf {
         memory '4G'
-        scratch true
+        //scratch true
 
         input:
         val(meta)
