@@ -1,4 +1,5 @@
 process filterIncompleteGeneModelsAGAT{
+        publishDir params.outdir, mode:'copy'
         memory '4G'
 
         input:
@@ -14,6 +15,7 @@ process filterIncompleteGeneModelsAGAT{
 }
 
 process getLongestIsoformAGAT{
+        publishDir params.outdir, mode:'copy'
         memory '4G'
 
         input:
@@ -43,6 +45,38 @@ process select_proteins{
         select_proteins.sh ${gff} ${prot_fa} > ${meta}.selected_proteins.fa 
         """
 
+}
+
+process selectProteinsAGAT{
+        publishDir params.outdir, mode:'copy'
+        memory '4G'
+
+        input:
+        tuple val(meta), path(gff), path(genome)
+
+        output:
+        tuple val(meta), path("${meta}.selected_proteins.fa")
+
+        script:
+        """
+        agat_sp_extract_sequences.pl -g ${gff} -f ${genome} -t cds -p -o ${meta}.selected_proteins.fa
+        """
+}
+
+process selectCDSsAGAT{
+        publishDir params.outdir, mode:'copy'
+        memory '4G'
+
+        input:
+        tuple val(meta), path(gff), path(genome)
+
+        output:
+        tuple val(meta), path("${meta}.selected_CDSs.fa")
+
+        script:
+        """
+        agat_sp_extract_sequences.pl -g ${gff} -f ${genome} -t cds -o ${meta}.selected_CDSs.fa
+        """
 }
 
 process orthofinder {

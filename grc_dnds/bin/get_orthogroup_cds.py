@@ -24,7 +24,7 @@ for prot_tsv in selected_protein_fs:
 	prot_df = prot_df[prot_df['Orthogroup'].isin(orthogroups)].reset_index().drop('index', axis=1).drop_duplicates().reset_index().drop('index', axis=1)
 
 	subprocess.run(
-		f"sed -e 's/>/>{species}./g' {cds_dir}/{species}.sl.fa > {cds_dir}/{species}.rn.fa",
+		f"sed -e 's/>/>{species}./g' {cds_dir}/{species}.selected_CDSs.sl.fa > {cds_dir}/{species}.rn.fa",
 		shell=True,
 		executable="/bin/bash"
 		)
