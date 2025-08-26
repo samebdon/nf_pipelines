@@ -29,7 +29,7 @@ def get_max_depth_mosdepth(bed_f, factor):
     variance = np.average((bed_df["depth"]-mean)**2, weights=bed_df["length"])
     SD = np.sqrt(variance)
     #SD = np.std(bed_df["depth"])
-    return int(mean+(factor*SD))
+    return int(factor*mean)#+(factor*SD))
     
     
 

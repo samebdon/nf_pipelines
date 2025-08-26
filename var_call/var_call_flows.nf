@@ -1,4 +1,4 @@
-include { bwaIndex; bwaMem; bwaMem_se; sortBamSambamba; markDupesSambamba; indexBamSambamba; mosdepth; intersectBeds; intersectBed; sambambaMerge; freebayes; freebayesParallel; bcftools_filter; generate_fail_bed; generate_pass_vcf; bedtools_subtract; bcftools_sort; bcftools_index} from './var_call_tasks.nf'
+include {trimReads; bwaIndex; bwaMem; bwaMem_se; sortBamSambamba; markDupesSambamba; indexBamSambamba; mosdepth; intersectBeds; intersectBed; sambambaMerge; freebayes; freebayesParallel; bcftools_filter; generate_fail_bed; generate_pass_vcf; bedtools_subtract; bcftools_sort; bcftools_index} from './var_call_tasks.nf'
 
 workflow var_call_flow {
         take:
@@ -8,8 +8,9 @@ workflow var_call_flow {
 	  			repeat_bed
 	  			species
         main:
+	  trimReads(read_files)
           bwaIndex(genome)
-          bwaMem(genome, bwaIndex.out, read_files)
+          bwaMem(genome, bwaIndex.out, trimReads.out)
 	  			sortBamSambamba(bwaMem.out)
           markDupesSambamba(sortBamSambamba.out)
 	 			  indexBamSambamba(markDupesSambamba.out.meta_bam)
@@ -33,8 +34,9 @@ workflow var_call_flow_single_pe {
 	  			repeat_bed
 	  			species
         main:
+	  trimReads(read_files)
           bwaIndex(genome)
-          bwaMem(genome, bwaIndex.out, read_files)
+          bwaMem(genome, bwaIndex.out, trimReads.out)
 	  			sortBamSambamba(bwaMem.out)
           markDupesSambamba(sortBamSambamba.out)
 	 			  indexBamSambamba(markDupesSambamba.out.meta_bam)
