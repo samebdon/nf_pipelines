@@ -32,9 +32,10 @@ for prot_tsv in selected_protein_fs:
 	for index, row in prot_df.iterrows():
 
 		orthogroup = row['Orthogroup']
-		protein = row['Proteins']
-		subprocess.run(
-			f"grep -A1 {protein} {cds_dir}/{species}.rn.fa >> {outdir}/{orthogroup}.cds.fa",
-			shell=True,
-			executable="/bin/bash"
-			)
+		proteins = row['Proteins'].split(',')
+		for protein in proteins:
+			subprocess.run(
+				f"grep -A1 {protein} {cds_dir}/{species}.rn.fa >> {outdir}/{orthogroup}.cds.fa",
+				shell=True,
+				executable="/bin/bash"
+				)

@@ -129,7 +129,7 @@ workflow grc_dnds_flow {
          // align_CDS
           macsev2(get_orthogroup_cds.out)
 
-          select_comparisons(macsev2.out.join(iqtree.out))
+          //select_comparisons(macsev2.out.join(iqtree.out))
 
          // codeml
          // codeml(select_comparisons.out)

@@ -170,13 +170,14 @@ process iqtree{
         //val{iqtree_outgroup}
 
         output:
-        tuple val(meta), path("${meta}_trees/*")
+        tuple val(meta), path("${meta}_trees/*pruned.treefile")
 
         script:
         """
         mkdir ${meta}_trees
         parallel -j4 'iqtree2 -s {} -T 8 -B 1000' ::: alignments/*
-        mv alignments/*.treefile ${meta}_trees
+        parallel -j1 "cat alignments/{/} | cut -f-1 -d' ' > ${meta}_trees/{/}" ::: alignments/*.treefile
+        prune_trees.py ${meta}_trees
         """
 }
 
@@ -229,6 +230,7 @@ process macsev2 {
         mkdir ${meta}_alignments
         parallel -j32 'macse -prog alignSequences -seq {}' ::: fastas/* || true
         mv fastas/*.cds_NT.fa ${meta}_alignments
+        parallel -j1 "sed -i 's/_selected_proteins_/./g' {}" ::: ${meta}_alignments/*
         """
 }
 
