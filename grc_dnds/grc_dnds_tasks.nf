@@ -177,7 +177,7 @@ process iqtree{
         mkdir ${meta}_trees
         parallel -j4 'iqtree2 -s {} -T 8 -B 1000' ::: alignments/*
         parallel -j1 "cat alignments/{/} | cut -f-1 -d' ' > ${meta}_trees/{/}" ::: alignments/*.treefile
-        prune_trees.py ${meta}_trees
+        ./prune_trees.py ${meta}_trees
         """
 }
 
