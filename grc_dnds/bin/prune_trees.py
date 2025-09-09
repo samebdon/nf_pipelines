@@ -8,13 +8,11 @@ from Bio import Phylo
 tree_dir = sys.argv[1]
 tree_files = [f for f in listdir(tree_dir) if isfile(join(tree_dir, f))]
 
-exclusion_names = ['phyg']
-
 for tree_file in tree_files:
 	meta = tree_file.split('.')[0]
 	tree = Phylo.read(f'{tree_dir}/{tree_file}', "newick")
 	leaves = tree.get_terminals()
-	excluded_leaves = [leaf for leaf in leaves if leaf.name in exclusion_names]
+	excluded_leaves = [leaf for leaf in leaves if 'phyg' in leaf.name]
 	for leaf in excluded_leaves:
 		tree.prune(leaf)
 	Phylo.write(tree, f'{tree_dir}/{meta}.pruned.treefile','newick')
