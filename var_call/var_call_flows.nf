@@ -8,22 +8,22 @@ workflow var_call_flow {
 	  			repeat_bed
 	  			species
         main:
-	  trimReads(read_files)
-          bwaIndex(genome)
-          bwaMem(genome, bwaIndex.out, trimReads.out)
+	  			trimReads(read_files)
+          		bwaIndex(genome)
+                bwaMem(genome, bwaIndex.out, trimReads.out)
 	  			sortBamSambamba(bwaMem.out)
-          markDupesSambamba(sortBamSambamba.out)
-	 			  indexBamSambamba(markDupesSambamba.out.meta_bam)
-          mosdepth(markDupesSambamba.out.meta_bam.join(indexBamSambamba.out), 8)
-          intersectBeds(mosdepth.out.collect(), repeat_bed, genome_index, species)
-				  sambambaMerge(markDupesSambamba.out.bam_only.collect(), species)
-				  freebayes(genome, genome_index, sambambaMerge.out, intersectBeds.out.freebayes)
-				  bcftools_filter(genome, freebayes.out)
-				  generate_fail_bed(bcftools_filter.out, genome_index)
-				  generate_pass_vcf(bcftools_filter.out)
-				  bedtools_subtract(intersectBeds.out.freebayes, generate_fail_bed.out, genome_index)
-				  bcftools_sort(generate_pass_vcf.out)
-				  bcftools_index(bcftools_sort.out)
+                markDupesSambamba(sortBamSambamba.out)
+	 			indexBamSambamba(markDupesSambamba.out.meta_bam)
+                mosdepth(markDupesSambamba.out.meta_bam.join(indexBamSambamba.out), 8)
+          		intersectBeds(mosdepth.out.collect(), repeat_bed, genome_index, species)
+				sambambaMerge(markDupesSambamba.out.bam_only.collect(), species)
+				freebayes(genome, genome_index, sambambaMerge.out, intersectBeds.out.freebayes)
+				bcftools_filter(genome, freebayes.out)
+				generate_fail_bed(bcftools_filter.out, genome_index)
+				generate_pass_vcf(bcftools_filter.out)
+				bedtools_subtract(intersectBeds.out.freebayes, generate_fail_bed.out, genome_index)
+				bcftools_sort(generate_pass_vcf.out)
+				bcftools_index(bcftools_sort.out)
 }
 
 workflow var_call_flow_single_pe {
