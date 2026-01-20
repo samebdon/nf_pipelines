@@ -1,7 +1,9 @@
 process trimReads {
         publishDir params.outdir, mode:'copy'
-
-        input:
+	cpus 4
+        memory '4G'
+        
+	input:
         tuple val(meta), path(reads)
 
         output:
