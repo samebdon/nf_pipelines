@@ -69,6 +69,26 @@ process bwaMem_se {
         """
 }
 
+process add_RGs{
+        input:
+        tuple val(meta), path(bam)
+
+        output:
+        tuple val(meta), path("{meta}.RG.bam")
+
+        script:
+        """
+        picard AddOrReplaceReadGroups \
+              I=${bam} \
+              O=${meta}.RG.bam \
+              RGID=${meta} \
+              RGLB=${meta} \
+              RGPL=${meta} \
+              RGPU=${meta} \
+              RGSM=${meta}
+        """
+}
+
 process sortBamSambamba {
         publishDir params.outdir, mode:'copy'
         memory '8G'
