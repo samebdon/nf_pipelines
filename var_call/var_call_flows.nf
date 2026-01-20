@@ -41,7 +41,7 @@ workflow var_call_flow_bams {
 		                	.set{ bam_ch }
 		                add_RGs(bam_ch)
 				sortBamSambamba(add_RGs.out)
-				markDupesSambamba(add_RGs.out)
+				markDupesSambamba(sortBamSambamba.out)
 				indexBamSambamba(markDupesSambamba.out.meta_bam)
 		                mosdepth(markDupesSambamba.out.meta_bam.join(indexBamSambamba.out), 8)
 		                intersectBeds(mosdepth.out.collect(), repeat_bed, genome_index, species)
