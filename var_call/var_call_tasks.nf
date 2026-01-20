@@ -70,22 +70,19 @@ process bwaMem_se {
 }
 
 process add_RGs{
+        publishDir params.outdir, mode:'copy'
         input:
         tuple val(meta), path(bam)
 
         output:
-        tuple val(meta), path("{meta}.RG.bam")
+        tuple val(meta), path("${meta}.RG.bam")
 
         script:
         """
-        picard AddOrReplaceReadGroups \
-              I=${bam} \
-              O=${meta}.RG.bam \
-              RGID=${meta} \
-              RGLB=${meta} \
-              RGPL=${meta} \
-              RGPU=${meta} \
-              RGSM=${meta}
+        samtools addreplacerg \
+                -r "ID:${meta},SM:${meta},LB:${meta},PL:${meta},PU:${meta}" \
+                -o ${meta}.RG.bam \
+                ${bam}
         """
 }
 

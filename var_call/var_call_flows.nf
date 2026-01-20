@@ -39,8 +39,8 @@ workflow var_call_flow_bams {
                                 	[prefix, bam]
                                 	} 
 		                	.set{ bam_ch }
-				sortBamSambamba(bam_ch)
-				add_RGs(sortBamSambamba.out)
+		                add_RGs(bam_ch)
+				sortBamSambamba(add_RGs.out)
 				markDupesSambamba(add_RGs.out)
 				indexBamSambamba(markDupesSambamba.out.meta_bam)
 		                mosdepth(markDupesSambamba.out.meta_bam.join(indexBamSambamba.out), 8)
