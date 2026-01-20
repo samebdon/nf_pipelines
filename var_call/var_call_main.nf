@@ -18,7 +18,8 @@ include { var_call_flow; var_call_flow_single_pe; var_call_flow_single_se; var_c
 
 // with bams
 workflow{
-  var_call_flow_bams(params.genome, params.genome_index, params.bams, params.repeat_bed, params.species
+  bam_ch = Channel.fromPath(params.bams, checkIfExists:true)
+  var_call_flow_bams(params.genome, params.genome_index, bam_ch, params.repeat_bed, params.species)
 }
 
 // one sample paired-end reads
