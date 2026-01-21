@@ -80,7 +80,7 @@ process add_RGs{
         script:
         """
         samtools addreplacerg \
-                -r "ID:${meta},SM:${meta},LB:${meta},PL:${meta},PU:${meta}" \
+                -r "ID:${meta}\tSM:${meta}\tLB:${meta}\tPL:${meta}\tPU:${meta}" \
                 -o ${meta}.RG.bam \
                 ${bam}
         """
