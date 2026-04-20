@@ -1,4 +1,4 @@
-include {trimReads; bwaIndex; bwaMem; bwaMem_se; add_RGs; sortBamSambamba; markDupesSambamba; indexBamSambamba; mosdepth; intersectBeds; intersectBed; sambambaMerge; freebayes; freebayesParallel; bcftools_filter; generate_fail_bed; generate_pass_vcf; bedtools_subtract; bcftools_sort; bcftools_index} from './var_call_tasks.nf'
+include {trimReads; bwaIndex; bwaMem; bwaMem_se; add_RGs; sortBamSambamba; markDupesSambamba; indexBamSambamba; mosdepth; intersectBeds; intersectBed; sambambaMerge; freebayes; freebayesParallel; bcftools_filter; generate_fail_bed; generate_pass_vcf; bedtools_subtract; bcftools_sort; bcftools_index} from '../modules/var_call_tasks.nf'
 
 workflow var_call_flow {
         take:

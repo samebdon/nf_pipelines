@@ -10,7 +10,7 @@ log.info """\
          """
          .stripIndent()
 
-include { var_call_flow; var_call_flow_single_pe; var_call_flow_single_se; var_call_flow_bams } from './var_call_flows.nf'
+include { var_call_flow; var_call_flow_single_pe; var_call_flow_single_se; var_call_flow_bams } from 'workflows/var_call_flows.nf'
 
 // many samples paired-end reads
 workflow {
